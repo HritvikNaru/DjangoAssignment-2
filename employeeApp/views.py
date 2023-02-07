@@ -1,145 +1,133 @@
-from django.shortcuts import render,redirect
-from .models import EmployeeDetails,DeviceDetails,DeviceRights
-from django.views import View
+from .models import Employee,Device
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core.mail import send_mail
-@csrf_exempt
+from rest_framework import viewsets
+from rest_framework.response import Response
+from . Thread import EmailThread
+from .serializers import DeviceDetailsSerializer
+from rest_framework.decorators import action
+from django.utils.decorators import method_decorator
 
-# Create your views here.
-# class EmployeeDetails(View):
-    # def get(self,request):
-    #     return render(request,"coursetemplates/register.html")
-    
-def Employee(request):
-        post=EmployeeDetails()
-        post.FirstName= request.POST.get('Fname')
-        post.LastName = request.POST.get('Lname')
-        post.MobileNumber= request.POST.get('Mobile')
-        post.Email= request.POST.get('email')
-        post.Address= request.POST.get('address')
+@method_decorator(csrf_exempt, name='dispatch')
 
-        post.save()
+class Employees(viewsets.ViewSet):
+        
+        def list(self,request):
+                data=Employee.objects.all().values()
+                return HttpResponse(data)  
+       
+        def post(self,request):
+                post=Employee()
+                post.FirstName= request.POST.get('Fname')
+                post.LastName = request.POST.get('Lname')
+                post.MobileNumber= request.POST.get('Mobile')
+                post.Email= request.POST.get('email')
+                post.Address= request.POST.get('address')       
+                post.save()
+                return HttpResponse("done!!")  
+        
+        @action(detail=False, methods=['POST'], name='Type')
+        def delete(self,request):
+                did= request.POST.get('empid')
+                print(did)
+                Employee.objects.filter(id=did).delete()
+                return HttpResponse("done!!")
+        
+        @action(detail=False, methods=['GET'], name='Type')
+        def database(self,request):
+                data=Employee.objects.all().values()
+                return HttpResponse(data)  
+        
+        @action(detail=False, methods=['POST'], name='Type')
+        def search(self,request):
+                srch=request.POST.get("search")
+                ret = Employee.objects.filter(FirstName__icontains=srch).values()
+                return HttpResponse(ret)
+        @action(detail=False, methods=['GET'], name='Type')
+        def history(self,request):
+                data=Employee.history.all().values()
+                return HttpResponse(data) 
+          
+@method_decorator(csrf_exempt, name='dispatch')
+
+class Devices(viewsets.ViewSet):
+        
+        def list(self,request):
                 
-        return HttpResponse("done!!")  
+                query=Device.objects.all()
+                serializer=DeviceDetailsSerializer(query,many=True)
+                return Response(serializer.data)
 
-
-@csrf_exempt
-
-def Devices(request):
-        post=DeviceDetails()
-        post.DeviceName= request.POST.get('Dname')
-        post.DeviceType = request.POST.get('Dtype')
-        post.DeviceCost= request.POST.get('Dcost')
-
-        post.save()
-                
-        return HttpResponse("done!!")  
-
-
-def DeviceType(request):
-        dtype=DeviceDetails.objects.all().values("DeviceType")
-        print(type(dtype))
-        return HttpResponse(dtype)  
-
-@csrf_exempt
-def Devicepermission(request):
-        send_mail(
-                'Device Allocated',
-                'The Device has been Allocated',
-                'hritvik@attentive.ai',
-                ['hritvik10@gmail.com'],
-                fail_silently=False,
-        )
-        post=DeviceRights()
-        did= request.POST.get('Deviceid')
-        eid=request.POST.get('Employeeid')
-        post.Device= DeviceDetails.objects.get(id=did)
-        post.Employee = EmployeeDetails.objects.get(id=eid)
-
-        post.save()
-                
-        return HttpResponse("done!!")  
-
-@csrf_exempt
-def DeviceDeallocate(request):
-        send_mail(
-                'Device Deallocated',
-                'The Device has been deallocated',
-                'hritvik@attentive.ai',
-                ['hritvik10@gmail.com'],
-                fail_silently=False,
-        )
-        did= request.POST.get('Deviceid')
-        eid=request.POST.get('Employeeid')
-        DeviceRights.objects.filter(Device=did, Employee=eid).delete()
-
+        def post(self,request):
+                post=Device()
+                post.Name= request.POST.get('Dname')
+                post.Type = request.POST.get('Dtype')
+                post.Cost= request.POST.get('Dcost')
+                post.Allocated= request.POST.get('Allocated')
+                eid=request.POST.get('Eassigned')
+                if eid != "":
+                        post.EmployeeAssigned=Employee.objects.get(id=eid)
+                post.save()
+                return HttpResponse("done!!")  
         
-                
-        return HttpResponse("done!!")  
-
-
-@csrf_exempt
-def DevInfo(request):
-        dtype= request.POST.get("Dtype")
-        print("devtype::",dtype)
-        devid=DeviceDetails.objects.filter(DeviceType=dtype).values("id")
-        print("devid::",devid[0]['id'])
-        empid=DeviceRights.objects.filter(Device=devid[0]['id']).values("Employee_id")
-        print("empid::",empid[0]['Employee_id'])
-        empname=EmployeeDetails.objects.filter(id=empid[0]['Employee_id']).values()
-        print(empname)
-        return HttpResponse("done!!")  
-
-@csrf_exempt
-def DeviceDel(request):
+        @action(detail=False, methods=['GET'], name='Type')
+        def type(self,request):
+                dtype=Device.objects.all().values("Type")
+                print(type(dtype))
+                return HttpResponse(dtype) 
         
-        send_mail(
-                'Subject here',
-                'Here is the message.',
-                'hritvik@attentive.ai',
-                ['hritvik10@gmail.com'],
-                fail_silently=False,
-        )
-        did= request.POST.get('Deviceid')
-        print(did)
-        DeviceDetails.objects.filter(id=did).delete()
-
+        @action(detail=False, methods=['POST'], name='Type')
+        def delete(self,request):
+               
+                did= request.POST.get('Deviceid')
+                print(did)
+                Device.objects.filter(id=did).delete()
+                return HttpResponse("done!")
+        
+        @action(detail=False, methods=['GET'], name='Type')
+        def database(self,request):
+                data=Device.objects.all().values()
+                return HttpResponse(data)  
+        
+        
+        @action(detail=False, methods=['POST'], name='Type')
+        def allocate(self,request):
+                EmailThread().start()
+                did= request.POST.get('Deviceid')
+                eid=request.POST.get('empid')
+                data=Device.objects.filter(id=did).update(EmployeeAssigned=eid)
+                return HttpResponse("done")
+        
+        @action(detail=False, methods=['POST'], name='Type')
+        def deallocate(self,request):
+                EmailThread().start()
+                did= request.POST.get('Deviceid')
+                data=Device.objects.filter(id=did).update(EmployeeAssigned=None)
+                return HttpResponse("done")
         
 
-        return HttpResponse("done!!")  
-
-@csrf_exempt
-def EmployeeDel(request):
+        @action(detail=False, methods=['POST'], name='Type')
+        def switch(self,request):
+                eid1= request.POST.get('empid1')
+                eid2= request.POST.get('empid2')
+                emp1=Device.objects.filter(id=eid1).values("EmployeeAssigned")[0]["EmployeeAssigned"]
+                emp2=Device.objects.filter(id=eid2).values("EmployeeAssigned")[0]["EmployeeAssigned"]
+                Device.objects.filter(id=eid1).update(EmployeeAssigned=emp2)
+                Device.objects.filter(id=eid2).update(EmployeeAssigned=emp1)
+                return HttpResponse("done")
         
-        did= request.POST.get('empid')
-        print(did)
-        EmployeeDetails.objects.filter(id=did).delete()
-        return HttpResponse("done!!")  
+        @action(detail=False, methods=['GET','POST'], name='Type')
+        def search(self,request):
+                srch=request.POST.get("search")
+                ret = Device.objects.filter(Name__icontains=srch).values()
+                return HttpResponse(ret)  
+
+        @action(detail=False, methods=['GET'], name='Type')
+        def history(self,request):
+                data=Device.history.all().values()
+                return HttpResponse(data) 
 
 
 
-
-@csrf_exempt
-def EmployeeData(request):
-        
-        data=EmployeeDetails.objects.all().values()
-
-        return HttpResponse(data)  
-
-
-@csrf_exempt
-def DeviceData(request):
-        
-        data=DeviceDetails.objects.all().values()
-
-        return HttpResponse(data)  
-
-@csrf_exempt
-def SearchEmployee(request):
-        srch=request.POST.get("search")
-        ret = EmployeeDetails.objects.filter(FirstName__icontains=srch).values()
-
-        return HttpResponse(ret)  
-
-
+       
+ 

@@ -13,20 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from rest_framework.routers import DefaultRouter
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from employeeApp import views
+
+
+router1=DefaultRouter()
+router2=DefaultRouter()
+router1.register('devicesapi',views.Devices,basename="device")
+router2.register('employeeapi',views.Employees,basename="employee")
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("details", views.Employee),
-     path("devices", views.Devices),
-    path("devicetype",views.DeviceType),
-    path("devicerights",views.Devicepermission),
-    path("devicedeallocate",views.DeviceDeallocate),
-    path("devinfo",views.DevInfo),
-    path("devdel",views.DeviceDel),
-    path("empdel",views.EmployeeDel),
-    path("empdata",views.EmployeeData),
-    path("devdata",views.DeviceData),
-    path("searchemp",views.SearchEmployee)
+    path("details/",include(router2.urls)),
+    path("", include(router1.urls)),
 ]

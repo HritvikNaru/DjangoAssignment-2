@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import EmployeeDetails,DeviceDetails
+from .models import Employee,Device
 
 class EmployeeDetailsSerializer(serializers.ModelSerializer):
     FirstName= serializers.CharField(max_length=100)
@@ -8,7 +8,7 @@ class EmployeeDetailsSerializer(serializers.ModelSerializer):
     Email= serializers.EmailField()
     Address= serializers.CharField(max_length=200)
     class Meta:
-        model = EmployeeDetails
+        model = Employee
         fields = (
             'FirstName',
             'LastName',
@@ -19,14 +19,16 @@ class EmployeeDetailsSerializer(serializers.ModelSerializer):
 
 
 class DeviceDetailsSerializer(serializers.ModelSerializer):
-    DeviceName= serializers.CharField(max_length=100)
-    DeviceType= serializers.CharField(max_length=100)
-    DeviceCost=serializers.IntegerField()
+    Name= serializers.CharField(max_length=100)
+    Type= serializers.CharField(max_length=100)
+    Cost=serializers.IntegerField()
     
     class Meta:
-        model = DeviceDetails
+        model = Device
         fields = (
-            'DeviceName',
-            'DeviceType',
-            'DeviceCost'  
+            'id',
+            'Name',
+            'Type',
+            'Cost',
+            'EmployeeAssigned'  
         )

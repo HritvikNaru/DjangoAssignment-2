@@ -1,13 +1,13 @@
 from django.contrib import admin
 
-from .models import EmployeeDetails,DeviceDetails
-@admin.register(EmployeeDetails)
+from .models import Employee,Device
+@admin.register(Employee)
 
 # Register your models here.
 class EmployeeAdmin(admin.ModelAdmin):
     list_display=['id','FirstName','LastName','MobileNumber','Email','Address']
 
 # Register your models here.
-@admin.register(DeviceDetails)
+@admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    list_display=['id','DeviceName','DeviceType','DeviceCost']
+    list_display=['id','Name','Type','Cost']
