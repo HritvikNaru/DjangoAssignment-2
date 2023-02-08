@@ -116,14 +116,14 @@ class Devices(viewsets.ViewSet):
                 EmailThread().start()
                 did= request.POST.get('Deviceid')
                 eid=request.POST.get('empid')
-                data=Device.objects.filter(id=did).update(EmployeeAssigned=eid)
+                data=Device.objects.filter(id=did).update(EmployeeAssigned=eid,Allocated=True)
                 return HttpResponse("done")
         
         @action(detail=False, methods=['POST'], name='Type')
         def deallocate(self,request):
                 EmailThread().start()
                 did= request.POST.get('Deviceid')
-                data=Device.objects.filter(id=did).update(EmployeeAssigned=None)
+                data=Device.objects.filter(id=did).update(EmployeeAssigned=None,Allocated=False)
                 return HttpResponse("done")
         
 
