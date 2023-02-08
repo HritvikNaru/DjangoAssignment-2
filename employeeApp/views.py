@@ -7,9 +7,12 @@ from . Thread import EmailThread
 from .serializers import DeviceDetailsSerializer
 from rest_framework.decorators import action
 from django.utils.decorators import method_decorator
+from faker import Faker
+fake=Faker()
+from faker.providers import phone_number
+fake.add_provider(phone_number)
 
 @method_decorator(csrf_exempt, name='dispatch')
-
 class Employees(viewsets.ViewSet):
         
         def list(self,request):
@@ -18,8 +21,8 @@ class Employees(viewsets.ViewSet):
        
         def post(self,request):
                 post=Employee()
-                post.FirstName= request.POST.get('Fname')
-                post.LastName = request.POST.get('Lname')
+                post.Name= request.POST.get('name')
+                # post.LastName = request.POST.get('Lname')
                 post.MobileNumber= request.POST.get('Mobile')
                 post.Email= request.POST.get('email')
                 post.Address= request.POST.get('address')       
@@ -41,15 +44,33 @@ class Employees(viewsets.ViewSet):
         @action(detail=False, methods=['POST'], name='Type')
         def search(self,request):
                 srch=request.POST.get("search")
-                ret = Employee.objects.filter(FirstName__icontains=srch).values()
+                ret = Employee.objects.filter(Name__icontains=srch).values()
                 return HttpResponse(ret)
         @action(detail=False, methods=['GET'], name='Type')
         def history(self,request):
                 data=Employee.history.all().values()
                 return HttpResponse(data) 
-          
-@method_decorator(csrf_exempt, name='dispatch')
+        
+        @action(detail=False, methods=['POST'], name='Type')
+        def mock(self,request):
+                
+                for i in range(10):
+                        post=Employee()
+                        post.Name= fake.name()
+                        
+                        post.MobileNumber= fake.phone_number()
+                        post.Email= ""
+                        post.Address= fake.address()       
+                        post.save()
+                        print(i,"done")
+                return HttpResponse("Complete!!")  
 
+
+
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
 class Devices(viewsets.ViewSet):
         
         def list(self,request):

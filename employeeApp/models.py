@@ -2,8 +2,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 # Create your models here.
 class Employee(models.Model):
-    FirstName= models.CharField(max_length=100)
-    LastName= models.CharField(max_length=100)
+    Name= models.CharField(max_length=100)
     MobileNumber= models.CharField(max_length=50)
     Email= models.EmailField()
     Address= models.CharField(max_length=200)

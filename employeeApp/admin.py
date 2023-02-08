@@ -5,9 +5,9 @@ from .models import Employee,Device
 
 # Register your models here.
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display=['id','FirstName','LastName','MobileNumber','Email','Address']
+    list_display=['id','Name','MobileNumber','Email','Address']
 
 # Register your models here.
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    list_display=['id','Name','Type','Cost']
+    list_display=['id','Name','Type','Cost','Allocated','EmployeeAssigned']

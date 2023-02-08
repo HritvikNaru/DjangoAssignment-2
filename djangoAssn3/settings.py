@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "employeeApp",
     "rest_framework",
     'simple_history',
+    
+    
 ]
 
 MIDDLEWARE = [
