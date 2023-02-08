@@ -84,7 +84,7 @@ class Devices(viewsets.ViewSet):
                 post.Name= request.POST.get('Dname')
                 post.Type = request.POST.get('Dtype')
                 post.Cost= request.POST.get('Dcost')
-                post.Allocated= request.POST.get('Allocated')
+                post.Allocated= False
                 eid=request.POST.get('Eassigned')
                 if eid != "":
                         post.EmployeeAssigned=Employee.objects.get(id=eid)
