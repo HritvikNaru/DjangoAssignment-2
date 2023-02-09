@@ -59,7 +59,7 @@ class Employees(viewsets.ViewSet):
                         post.Name= fake.name()
                         
                         post.MobileNumber= fake.phone_number()
-                        post.Email= ""
+                        post.Email= fake.email()
                         post.Address= fake.address()       
                         post.save()
                         print(i,"done")
@@ -161,5 +161,5 @@ class Devices(viewsets.ViewSet):
 
 
 
-        
+
  
