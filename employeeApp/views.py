@@ -64,6 +64,8 @@ class Employees(viewsets.ViewSet):
                         post.save()
                         print(i,"done")
                 return HttpResponse("Complete!!")  
+        
+        
 
 
 
@@ -148,7 +150,16 @@ class Devices(viewsets.ViewSet):
                 data=Device.history.all().values()
                 return HttpResponse(data) 
 
+        @action(detail=False, methods=['POST'], name='Type')
+        def info(self,request):
+                res=[]
+                queryset=Device.objects.filter(Type="Laptop").values("EmployeeAssigned")
+                for i in queryset:
+                        print(i['EmployeeAssigned'])
+                        res.append(Employee.objects.filter(id=i['EmployeeAssigned']).values("Name"))
+                return HttpResponse(res)
 
 
-       
+
+        
  
