@@ -13,6 +13,6 @@ class Device(models.Model):
     Type= models.CharField(max_length=100)
     Cost= models.IntegerField()
     Allocated=models.BooleanField(default=False)
-    EmployeeAssigned=models.ForeignKey(Employee , on_delete=models.CASCADE,related_name="employee",null=True,default=None,blank=True)
+    EmployeeAssigned=models.ForeignKey(Employee , on_delete=models.SET_DEFAULT,related_name="employee",null=True,default=None,blank=True)
     history = HistoricalRecords()
 

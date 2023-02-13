@@ -33,6 +33,9 @@ class Employees(viewsets.ViewSet):
         def delete(self,request):
                 did= request.POST.get('empid')
                 print(did)
+                b=Employee.objects.get(id=did)
+                idn=b.employee.all().values('id')[0]['id']
+                Device.objects.filter(id=idn).update(Allocated=False)
                 Employee.objects.filter(id=did).delete()
                 return HttpResponse("done!!")
         
@@ -46,11 +49,18 @@ class Employees(viewsets.ViewSet):
                 srch=request.POST.get("search")
                 ret = Employee.objects.filter(Name__icontains=srch).values()
                 return HttpResponse(ret)
-        @action(detail=False, methods=['GET'], name='Type')
+        @action(detail=False, methods=['POST'], name='Type')
         def history(self,request):
                 data=Employee.history.all().values()
                 return HttpResponse(data) 
         
+        @action(detail=False, methods=['POST'], name='Type')
+        def allocated(self,request):
+                idn=request.POST.get('id')
+                b=Employee.objects.get(id=idn)
+                print(b.employee.all().values())
+                return HttpResponse(b.employee.all().values())
+
         @action(detail=False, methods=['POST'], name='Type')
         def mock(self,request):
                 
@@ -153,7 +163,8 @@ class Devices(viewsets.ViewSet):
         @action(detail=False, methods=['POST'], name='Type')
         def info(self,request):
                 res=[]
-                queryset=Device.objects.filter(Type="Laptop").values("EmployeeAssigned")
+                tp=request.POST.get("type")
+                queryset=Device.objects.filter(Type=tp).values("EmployeeAssigned")
                 for i in queryset:
                         print(i['EmployeeAssigned'])
                         res.append(Employee.objects.filter(id=i['EmployeeAssigned']).values("Name"))
